@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>NimbleHouse</title>
+</head>
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css" integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous">
+<link rel="stylesheet" type="text/css" href="/css/app.css">
+
+<body>
+
+    <div class="container mt-4">
+        <div class="jumbotron">
+            <h1 class="display-4">Hi, <%=currentUser%>.</h4>
+            <p class="lead">Welcome to your dashboard! From here you can find your elderly and make requests to track others.</p>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="row">
+            <!-- Card to track an elderly -->
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-map-marker-alt"></i> Find Your Elderly
+                    </div>
+                    <div class="card-body">
+                        <input type="text" id="userName" class="form-control mb-3" placeholder="Enter user you want to monitor...">
+                        <input type="text" id="careUser" class="form-control mb-3" value="<%=currentUser%>" hidden>
+                        <div id="map"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Request permission to track -->
+            <div class="col-md-4">
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <i class="far fa-comment"></i> Request Permission to Track
+                    </div>
+                    <div class="card-body">
+                        <div class="text-center mb-3 return"></div>
+                        <input type="text" id="seniorTrack" class="form-control mb-3" placeholder="Enter user you want to track...">
+                        <input type="text" id="careTrack" class="form-control mb-3" value="<%=currentUser%>" hidden>
+                        <button id="track-submit" class="btn btn-lg btn-primary btn-block">Submit Request</button>
+                    </div>
+                </div>
+
+                <!-- Notifications -->
+                <div class="card">
+                    <div class="card-header">
+                        <i class="far fa-bell"></i> Notifications
+                    </div>
+                    <ul class="list-group list-group-flush notifications">
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.bundle.min.js" integrity="sha384-pjaaA8dDz/5BgdFUPX6M/9SUZv4d12SUPF0axWc+VRZkx5xU3daN+lYb49+Ax+Tl" crossorigin="anonymous"></script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=<%=GM_API_KEY%>&callback=initMap"></script>
+    <script type="text/javascript" src="/js/user.js"></script>
+
+    <!-- Javascript to load notifications -->
+    <script type="text/javascript">
+        let notiURL = "https://elderly-monitoring-project-webapp.lib.id/Elderly-App@dev/list-notifications/?caretakerUsername=<%=currentUser%>";
+        
+        getNotis();
+        function getNotis() {
+            $.getJSON(notiURL)
+            .then(updateNotifications);
+        }
+
+        function updateNotifications(notifications) {
+            $(".notifications").html('');
+            notifications.forEach(noti => {
+                $(".notifications").append(`<li class="list-group-item">${noti['seniorUsername']}: ${noti['message']}</li>`)
+            })
+        }
+
+        setInterval(getNotis, 10000);
+    </script>
+</body>
+</html>
