@@ -27,8 +27,7 @@ public class SpeechRec extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
+        setContentView(R.layout.activity_speech_rec);
 
         voiceInput = (TextView) findViewById(R.id.voiceInput);
         speakButton = (TextView) findViewById(R.id.btnSpeak);
@@ -45,7 +44,7 @@ public class SpeechRec extends AppCompatActivity {
         //String speak = "Do you need help?";
         //text1.speak(speak,TextToSpeech.QUEUE_FLUSH,null);
 
-        //Toast.makeText(getApplicationContext(),speak,Toast.LENGTH_LONG).show();
+        //Toast.makeText(getApplicationContext(), speak, Toast.LENGTH_LONG).show();
 
         speakButton.setOnClickListener(new View.OnClickListener() {
 
@@ -82,16 +81,17 @@ public class SpeechRec extends AppCompatActivity {
             case REQ_CODE_SPEECH_INPUT: {
                 if (resultCode == RESULT_OK && null != data) {
 
-
                     ArrayList<String> result = data
                             .getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
                     String speak  = result.get(0);
 
-                    Toast.makeText(this, "WE MADE IT", Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, "You said: " + speak, Toast.LENGTH_LONG).show();
 
                     // Send the message back to the server
                     long unixTime = System.currentTimeMillis() / 1000L;
-                    StdLibRequest request = new StdLibNotifyCaretakerRequest("bob", speak,  unixTime, 1);
+//                    StdLibRequest request = new StdLibNotifyCaretakerRequest(MainActivity.username, speak,  unixTime, 1);
+                    StdLibRequest request = new StdLibNotifyCaretakerRequest("Bob", speak,  unixTime, 1);
+
                     new StdLib().doInBackground(request);
 
                     this.finish();

@@ -37,7 +37,7 @@ public class StdLibNotifyCaretakerRequest implements StdLibRequest {
             // adding the headers for request
             httpURLConnection.setRequestProperty("Content-Type", "application/json");
             try {
-                //to tell the connection object that we will be wrting some data on the server and then will fetch the output result
+                //to tell the connection object that we will be writing some data on the server and then will fetch the output result
                 httpURLConnection.setDoOutput(true);
                 // this is used for just in case we don't know about the data size associated with our request
                 httpURLConnection.setChunkedStreamingMode(0);
@@ -50,6 +50,7 @@ public class StdLibNotifyCaretakerRequest implements StdLibRequest {
                 outputStreamWriter.close();
 
             } catch (Exception e) {
+                httpURLConnection.disconnect();
                 e.printStackTrace();
             } finally {
                 // this is done so that there are no open connections left when this task is going to complete

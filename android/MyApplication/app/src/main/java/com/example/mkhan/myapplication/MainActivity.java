@@ -5,12 +5,14 @@ import android.app.PendingIntent;
 import android.content.Intent;
 import android.location.Location;
 import android.net.Uri;
+import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -23,65 +25,66 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
-import java.util.ArrayList;
-
 public class MainActivity extends AppCompatActivity {
 
     public static final String TAG = "MainActivity";
     public static final String GEOFENCE_ID = "HomePerimeter";
 
+    public static String username;
+
+    public static ImageView imageView;
+
     GoogleApiClient googleApiClient = null;
 
     private Button directionMap;
     private Button startLocationMonitoring;
-    private Button startGeofenceMonitoring;
-    private Button stopGeofenceMonitoring;
+
+    // TODO: make a server side function call to retrieve residence coordinates
+    double topHatLatitude = 43.668579;
+    double topHatLongitude = -79.393234;
+    float perimeterRadius = 100; // radius in meters
 
     public static final String EXTRA_MESSAGE = "com.example.myfirstapp.MESSAGE";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        username = getIntent().getStringExtra("username");
+
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
+
         setContentView(R.layout.activity_main);
 
         // setup location and geofence related buttons
-        startLocationMonitoring = (Button) findViewById(R.id.startLocationMonitoring);
+        startLocationMonitoring = findViewById(R.id.startLocationMonitoring);
         startLocationMonitoring.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startLocationMonitoring();
-            }
-        });
-        startGeofenceMonitoring = (Button) findViewById(R.id.startGeofenceMonitoring);
-        startGeofenceMonitoring.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
                 startGeofenceMonitoring();
-            }
-        });
-        stopGeofenceMonitoring = (Button) findViewById(R.id.stopGeofenceMonitoring);
-        stopGeofenceMonitoring.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                stopGeofenceMonitoring();
+
+                imageView = findViewById(R.id.houseIcon);
+                imageView.setImageDrawable(getDrawable(R.drawable.icon_green));
             }
         });
 
         directionMap = (Button)findViewById(R.id.maps);
-
         directionMap.setOnClickListener(new View.OnClickListener(){
             public void onClick (View v){
-                Intent maps = new Intent (Intent.ACTION_VIEW, Uri.parse("google.navigation:q=Bahen+Toronto+Canada"));
+                Intent maps = new Intent (Intent.ACTION_VIEW, Uri.parse("google.navigation:q=" + Double.toString(topHatLatitude) + "," + Double.toString(topHatLongitude) + "&mode=w"));
                 maps.setPackage("com.google.android.apps.maps");
-
                 startActivity(maps);
             }
 
         });
+
         // FINE_LOCATION uses gps, COARSE_LOCATION uses wifi
         // FINE_LOCATION consumes more battery but is more accurate and doesn't require wifi access
 
         // request location permission from user
         requestPermissions(new String[] {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1234);
+        //requestPermissions(new String[] {Manifest.permission.INTERNET}, 1234);
 
         // build Google API
         googleApiClient = new GoogleApiClient.Builder(this)
@@ -153,8 +156,11 @@ public class MainActivity extends AppCompatActivity {
                 public void onLocationChanged(Location location) {
                     Log.d(TAG, "Location Update: Latitude " + location.getLatitude() + " Longitude " + location.getLongitude());
 
+                    TextView coordTxtbox = findViewById(R.id.coordinatesTxtbox);
+                    coordTxtbox.setText("(" + location.getLatitude() + ", " + location.getLongitude() + ")");
+
                     long unixTimestamp = System.currentTimeMillis() / 1000L;
-                    StdLibSendLocationRequest request = new StdLibSendLocationRequest("bob", unixTimestamp, location.getLatitude(), location.getLongitude());
+                    StdLibSendLocationRequest request = new StdLibSendLocationRequest("Bob", unixTimestamp, Double.toString(location.getLatitude()), Double.toString(location.getLongitude()));
                     new StdLib().doInBackground(request);
                 }
             });
@@ -167,16 +173,10 @@ public class MainActivity extends AppCompatActivity {
     private void startGeofenceMonitoring(){
         Log.d(TAG, "Function Call: startGeofenceMonitoring()");
         try{
-
-            // TODO: make a server side function call to retrieve residence coordinates
-            double residenceLatitude = 43.659617483;
-            double residenceLongitude = -79.397099018;
-            float perimeterRadius = 100; // radius in meters
-
             // create a circular geofence perimeter
             Geofence geofence = new Geofence.Builder()
                     .setRequestId(GEOFENCE_ID)
-                    .setCircularRegion(residenceLatitude, residenceLongitude, perimeterRadius) // sets the region of this geofence
+                    .setCircularRegion(topHatLatitude, topHatLongitude, perimeterRadius) // sets the region of this geofence
                     .setExpirationDuration(Geofence.NEVER_EXPIRE) // sets the expiration duration of geofence
                     .setNotificationResponsiveness(1000) // sets the best-effort notification responsiveness of the geofence
                     .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER | Geofence.GEOFENCE_TRANSITION_EXIT)
@@ -211,15 +211,14 @@ public class MainActivity extends AppCompatActivity {
         } catch (Error error){}
     }
 
-    // we can call this method to remove existing geofences
-    private void stopGeofenceMonitoring(){
-        Log.d(TAG, "Function Call: stopMonitoring()");
-        ArrayList<String> geofenceIds = new ArrayList<String>();
-        geofenceIds.add(GEOFENCE_ID);
-
-        // ignore the fact that this is a deprecated function for now
-        LocationServices.GeofencingApi.removeGeofences(googleApiClient, geofenceIds);
-    }
-
+//    // we can call this method to remove existing geofences
+//    private void stopGeofenceMonitoring(){
+//        Log.d(TAG, "Function Call: stopMonitoring()");
+//        ArrayList<String> geofenceIds = new ArrayList<String>();
+//        geofenceIds.add(GEOFENCE_ID);
+//
+//        // ignore the fact that this is a deprecated function for now
+//        LocationServices.GeofencingApi.removeGeofences(googleApiClient, geofenceIds);
+//    }
 
 }

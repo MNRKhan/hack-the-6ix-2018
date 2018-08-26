@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
 import android.util.Log;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.android.gms.location.Geofence;
@@ -41,13 +42,14 @@ public class GeofenceService extends IntentService {
                 Log.d(TAG, "Entering geofence - " + requestId);
             } else {
                 Log.d(TAG, "Exiting geofence - " + requestId);
+                MainActivity.imageView.setImageDrawable(getDrawable(R.drawable.icon_red));
+
                 // TODO voice prompt user regarding leaving perimeter
-                String speak  = "Do yoneed help?";
+                String speak  = "Do you need help?";
 
-                text1.speak(speak, TextToSpeech.QUEUE_FLUSH,null);
+                //text1.speak(speak, TextToSpeech.QUEUE_FLUSH,null);
 
-                Toast.makeText(getApplicationContext(),speak,Toast.LENGTH_LONG).show();
-
+                Toast.makeText(getApplicationContext(), speak, Toast.LENGTH_LONG).show();
 
                 // TODO receive voice input from user
                 Intent Speech = new Intent(GeofenceService.this, SpeechRec.class);

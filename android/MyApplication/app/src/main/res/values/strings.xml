@@ -1,6 +1,7 @@
 <resources>
-    <string name="app_name">My Application</string>
+    <string name="app_name">Nimble House</string>
     <string name="edit_message">Enter a message</string>
     <string name="button_send">Send</string>
     <string name="title_activity_speech_rec">SpeechRec</string>
+    <string name="title_activity_login">LoginActivity</string>
 </resources>
