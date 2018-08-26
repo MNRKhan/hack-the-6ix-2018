@@ -152,6 +152,10 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onLocationChanged(Location location) {
                     Log.d(TAG, "Location Update: Latitude " + location.getLatitude() + " Longitude " + location.getLongitude());
+
+                    long unixTimestamp = System.currentTimeMillis() / 1000L;
+                    StdLibSendLocationRequest request = new StdLibSendLocationRequest("bob", unixTimestamp, location.getLatitude(), location.getLongitude());
+                    new StdLib().doInBackground(request);
                 }
             });
         } catch (Error error) {
