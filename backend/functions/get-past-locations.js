@@ -38,7 +38,7 @@ module.exports = async (seniorUsername = 'bob', caretakerUsername = "joe") => {
                 // Query the database
                 return await db.collection("past-locations")
                     .where("username", "==", seniorUsername)
-                    .orderBy("timestamp", "desc")
+                    //.orderBy("timestamp", "desc")
                     .get()
                     .then(async snapshot => {
                         var response = [];
