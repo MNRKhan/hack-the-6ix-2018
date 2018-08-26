@@ -89,6 +89,11 @@ public class SpeechRec extends AppCompatActivity {
 
                     Toast.makeText(this, "WE MADE IT", Toast.LENGTH_LONG).show();
 
+                    // Send the message back to the server
+                    long unixTime = System.currentTimeMillis() / 1000L;
+                    StdLibRequest request = new StdLibNotifyCaretakerRequest("bob", speak,  unixTime, 1);
+                    new StdLib().doInBackground(request);
+
                     this.finish();
 
                 }

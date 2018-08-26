@@ -12,10 +12,10 @@ public class StdLibNotifyCaretakerRequest implements StdLibRequest {
 
     private final String seniorUsername;
     private final String message;
-    private final String timestamp;
+    private final long timestamp;
     private final int priority;
 
-    public StdLibNotifyCaretakerRequest(String seniorUsername, String message, String timestamp, int priority){
+    public StdLibNotifyCaretakerRequest(String seniorUsername, String message, long timestamp, int priority){
 
         this.seniorUsername = seniorUsername;
         this.message = message;
