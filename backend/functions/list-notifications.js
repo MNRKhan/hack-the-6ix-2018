@@ -40,6 +40,16 @@ module.exports = async (caretakerUsername) => {
             await snapshot.forEach(doc => {
                 response.push(doc.data());
             });
+
+            for (let i = 0; i < response.length; i++){
+                for (let j = i + 1; j < response.length; j++){
+                    if (response[i].timestamp > response[j].timestamp){
+                        let temp = response[i];
+                        response[i] = response[j];
+                        response[j] = temp;
+                    }
+                }
+            }
             return response;
         }).catch(error => {
             var response = {
