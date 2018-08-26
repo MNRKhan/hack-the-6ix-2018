@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.location.Location;
+import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -31,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
 
     GoogleApiClient googleApiClient = null;
 
+    private Button directionMap;
     private Button startLocationMonitoring;
     private Button startGeofenceMonitoring;
     private Button stopGeofenceMonitoring;
@@ -64,6 +66,17 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        directionMap = (Button)findViewById(R.id.maps);
+
+        directionMap.setOnClickListener(new View.OnClickListener(){
+            public void onClick (View v){
+                Intent maps = new Intent (Intent.ACTION_VIEW, Uri.parse("google.navigation:q=Bahen+Toronto+Canada"));
+                maps.setPackage("com.google.android.apps.maps");
+
+                startActivity(maps);
+            }
+
+        });
         // FINE_LOCATION uses gps, COARSE_LOCATION uses wifi
         // FINE_LOCATION consumes more battery but is more accurate and doesn't require wifi access
 
@@ -204,12 +217,5 @@ public class MainActivity extends AppCompatActivity {
         LocationServices.GeofencingApi.removeGeofences(googleApiClient, geofenceIds);
     }
 
-    // called whenever "Send" button is pressed, navigate to new screen with text input value
-    public void sendMessage(View view) {
-        Intent intent = new Intent(this, DisplayMessageActivity.class);
-        EditText editText = (EditText) findViewById(R.id.editText);
-        String message = editText.getText().toString();
-        intent.putExtra(EXTRA_MESSAGE, message);
-        startActivity(intent);
-    }
+
 }

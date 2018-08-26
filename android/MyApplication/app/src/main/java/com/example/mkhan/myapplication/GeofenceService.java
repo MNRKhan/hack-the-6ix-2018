@@ -2,7 +2,10 @@ package com.example.mkhan.myapplication;
 
 import android.app.IntentService;
 import android.content.Intent;
+import android.os.Bundle;
+import android.speech.tts.TextToSpeech;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingEvent;
@@ -20,7 +23,8 @@ public class GeofenceService extends IntentService {
     public GeofenceService(){
         super(TAG);
     }
-
+    TextToSpeech text1;
+    String data;
     // called whenever an geofence event is triggered (i.e. entered/exited)
     @Override
     protected void onHandleIntent(Intent intent) {
@@ -38,16 +42,27 @@ public class GeofenceService extends IntentService {
             } else {
                 Log.d(TAG, "Exiting geofence - " + requestId);
                 // TODO voice prompt user regarding leaving perimeter
+                String speak  = "Do yoneed help?";
+
+                text1.speak(speak, TextToSpeech.QUEUE_FLUSH,null);
+
+                Toast.makeText(getApplicationContext(),speak,Toast.LENGTH_LONG).show();
+
 
                 // TODO receive voice input from user
+                Intent Speech = new Intent(GeofenceService.this, SpeechRec.class);
+                startActivity(Speech);
 
                 // TODO convert voice input to text
+
 
                 // TODO identify affirmative/negative/unclear meaning from user input
 
                 // TODO affirmative "Lost" or unclear meaning should make server-side function call to inform nurse
-
+                //Just send Data to firebase
                 // TODO negative should direct user to Google Maps app if available
+
+
 
             }
         }
