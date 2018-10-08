@@ -1,4 +1,4 @@
-# hack-the-6ix-2018: Nimble House
+# Nimble House: hack-the-6ix-2018
 A navigation & location-tracking app for seniors and a web-platform for caretakers to monitor and assist them.
 
 # Inspiration
